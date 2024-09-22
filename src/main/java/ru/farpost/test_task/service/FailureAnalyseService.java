@@ -1,6 +1,5 @@
-package ru.farpost.test_task.handler;
+package ru.farpost.test_task.service;
 
-import ru.farpost.test_task.entity.FailureState;
 import ru.farpost.test_task.entity.LogRecordEntity;
 
 public class FailureAnalyseService {

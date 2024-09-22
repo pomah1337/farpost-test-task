@@ -1,4 +1,4 @@
-package ru.farpost.test_task.handler;
+package ru.farpost.test_task.service;
 
 public class StatsCalculator {
     private int failCount = 0;

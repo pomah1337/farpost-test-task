@@ -1,16 +1,34 @@
 package ru.farpost.test_task;
 
 
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.UnrecognizedOptionException;
 import ru.farpost.test_task.entity.LogRecordEntity;
-import ru.farpost.test_task.handler.FailureAnalyseService;
+import ru.farpost.test_task.service.FailureAnalyseService;
+import ru.farpost.test_task.service.OptionParser;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Map;
 
 public class Main {
+
+    private static final String OPTIONS_HINT = "Try: -u <response time> -t <availability level>";
+
     public static void main(String[] args) {
-        FailureAnalyseService failureAnalyseService = new FailureAnalyseService(54, 90);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        reader.lines().forEach(l -> failureAnalyseService.analyse(new LogRecordEntity(l)));
+        try {
+            Map<String, Double> options = OptionParser.getOptions(args);
+            FailureAnalyseService failureAnalyseService = new FailureAnalyseService(
+                    options.get("t"),
+                    options.get("u")
+            );
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            reader.lines().forEach(l -> failureAnalyseService.analyse(new LogRecordEntity(l)));
+        } catch (UnrecognizedOptionException e) {
+            System.out.printf("Unknown option %s. %s.\n", e.getOption(), OPTIONS_HINT);
+        } catch (ParseException e) {
+            System.out.printf("Missing options. %s.\n", OPTIONS_HINT);
+        }
+
     }
 }
