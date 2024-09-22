@@ -1,52 +1,51 @@
 package ru.farpost.test_task.service;
 
 import ru.farpost.test_task.entity.LogRecordEntity;
+import ru.farpost.test_task.entity.ReportEntity;
 
 public class FailureAnalyseService {
-
-    int lineCounter = 0;
-    int startLine = 0;
-    int endLine = 0;
-
     private final static String BAD_RESPONSE_CODE = "5";
 
     private final double acceptableResponseTime;
     private final double acceptableAvailabilityLevel;
-    private boolean isFallPeriod = false;
-    private String lastFailTime;
 
     private final StatsCalculator statsCalculator;
+    private boolean isFallPeriod = false;
+    private String lastFailTime;
+    private ReportEntity report;
 
     public FailureAnalyseService(double acceptableResponseTime, double acceptableAvailabilityLevel) {
         this.acceptableResponseTime = acceptableResponseTime;
         this.acceptableAvailabilityLevel = acceptableAvailabilityLevel;
         statsCalculator = new StatsCalculator();
+        report = new ReportEntity();
     }
 
-    public void analyse(LogRecordEntity logRecord) {
-        lineCounter++;
+    public ReportEntity analyse(LogRecordEntity logRecord) {
         if (isLogFailed(logRecord)) {
             statsCalculator.addFail();
             lastFailTime = logRecord.getRequestDateTime();
-            endLine = lineCounter;
             if (!isFallPeriod) {
-                System.out.print(logRecord.getRequestDateTime() + " ");
+                report.setStart(logRecord.getRequestDateTime());
                 isFallPeriod = true;
-                startLine = lineCounter;
             }
         } else if (isFallPeriod) {
             statsCalculator.addSuccess();
-            double availabilityLevel = statsCalculator.getAvailabilityLevelWithCache();
+            double availabilityLevel = statsCalculator.getAvailabilityLevel();
             if (availabilityLevel >= acceptableAvailabilityLevel) {
-                System.out.printf("%s %f\n",
-                        lastFailTime,
-                        statsCalculator.getAvailabilityLevel());
-
-                System.out.printf("%d %d\n", startLine, endLine);
-
+                report.setEnd(lastFailTime);
+                report.setAvailabilityLevel(statsCalculator.getAvailabilityLevelAfterLastFail());
+                report.setReady(true);
                 statsCalculator.reset();
                 isFallPeriod = false;
             }
+        }
+        if (report.isReady()) {
+            ReportEntity resultReport = report;
+            report = new ReportEntity();
+            return resultReport;
+        } else {
+            return null;
         }
     }
 
