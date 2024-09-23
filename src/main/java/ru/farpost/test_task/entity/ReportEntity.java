@@ -4,6 +4,9 @@ package ru.farpost.test_task.entity;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Сущность для создания отчёта о сбое доступности сервиса.
+ */
 @Setter
 @Getter
 public class ReportEntity {

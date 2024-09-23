@@ -26,8 +26,8 @@ public class Main {
             );
             String line;
             while ((line = reader.readLine()) != null) {
-                ReportEntity report = failureAnalyseService.analyse(new LogRecordEntity(line));
-                if (report!=null)
+                ReportEntity report = failureAnalyseService.addLogToAnalysis(new LogRecordEntity(line));
+                if (report != null)
                     System.out.println(report);
             }
 
@@ -39,7 +39,5 @@ public class Main {
             System.out.printf("Incorrect value. %s.\n", OPTIONS_HINT);
         } catch (IOException ignored) {
         }
-
-
     }
 }

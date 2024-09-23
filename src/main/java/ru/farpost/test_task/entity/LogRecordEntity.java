@@ -2,6 +2,9 @@ package ru.farpost.test_task.entity;
 
 import lombok.Getter;
 
+/**
+ * Сущность для чтения записи из лога.
+ */
 @Getter
 public class LogRecordEntity {
     private final String requestDateTime;
